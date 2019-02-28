@@ -28,7 +28,7 @@ class CategoriesTableViewController: UIViewController, UITableViewDataSource, UI
         let managedContext = appDelegate.persistentContainer.viewContext
         
         let fetchRequest: NSFetchRequest<Category> = Category.fetchRequest()
-        
+        //fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         do {
             categories = try managedContext.fetch(fetchRequest)
             
@@ -88,11 +88,50 @@ class CategoriesTableViewController: UIViewController, UITableViewDataSource, UI
             categoriesTableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
-
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
+    
+    func deleteCategoryConfirmation(at indexPath: IndexPath) {
+        let category = categories[indexPath.row]
+        
+        if let documents = category.documents, documents.count > 0 {
+            
+            let name = category.title ?? "This category"
+            
+            let alert = UIAlertController(title: "Delete Category?", message: "\(name) contains documents inside. Are you sure you want to delete it?", preferredStyle: UIAlertController.Style.alert)
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.cancel, handler: {
+                (alertAction) -> Void in
+                self.categoriesTableView.reloadData()
+            }))
+            alert.addAction(UIAlertAction(title: "Delete", style: UIAlertAction.Style.destructive, handler: {
+                (alertAction) -> Void in
+                self.deleteCategory(at: indexPath)
+            }))
+            
+            self.present(alert, animated: true, completion: nil)
+            
+        } else {
             deleteCategory(at: indexPath)
         }
+    }
+    
+    func editCategory(at indexPath: IndexPath){
+        let category = categories[indexPath.row]
+        
+    }
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
+        let delete = UITableViewRowAction(style: .destructive, title: "Delete") {
+            action, index in
+            self.deleteCategoryConfirmation(at: indexPath)
+        }
+        
+        let edit = UITableViewRowAction(style: .default, title: "edit") {
+            action, index in
+            self.editCategory(at: indexPath)
+        }
+        edit.backgroundColor = UIColor.gray
+        
+        return [delete, edit]
     }
     
 }

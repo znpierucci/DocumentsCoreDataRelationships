@@ -21,11 +21,14 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        title = category?.title ?? ""
+        
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .medium
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        //documents = category?.documents?.sortedArray(using: [NSSortDescriptor(key: "name", ascending: true)]) as? [Document] ?? [Document]()
         self.documentsTableView.reloadData()
     }
     
@@ -81,11 +84,21 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let destination = segue.destination as? DocumentsViewController else {
-            return
-        }
+//        guard let destination = segue.destination as? DocumentsViewController else {
+//            return
+//        }
+//
+//        destination.category = category
         
-        destination.category = category
+        if let destination = segue.destination as? DocumentsViewController,
+            let segueIdentifier = segue.identifier {
+            destination.category = category
+            if (segueIdentifier == "editDocument") {
+                if let selectedRow = documentsTableView.indexPathForSelectedRow?.row {
+                    destination.document = documents[selectedRow]
+                }
+            }
+        }
     }
 
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -93,4 +106,7 @@ class DocumentsTableViewController: UIViewController, UITableViewDataSource, UIT
             deleteDocument(at: indexPath)
         }
     }
+    
+    
+
 }

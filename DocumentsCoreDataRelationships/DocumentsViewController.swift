@@ -19,6 +19,8 @@ class DocumentsViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        title = ""
 
         if let document = document {
             let name = document.name

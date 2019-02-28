@@ -23,13 +23,13 @@ public class Document: NSManagedObject {
     
     convenience init? (name: String?, content: String?) {
         let appDelegate = UIApplication.shared.delegate as? AppDelegate
-        
+
         guard let managedContext = appDelegate?.persistentContainer.viewContext,
             let name = name, name != "" else {
                 return nil
         }
         self.init(entity: Document.entity(), insertInto: managedContext)
-        
+
         self.name = name
         self.content = content
         self.date = Date(timeIntervalSinceNow: 0)
@@ -38,8 +38,7 @@ public class Document: NSManagedObject {
         } else {
             self.size = 0
         }
-        
-        
+
     }
     
     func update(name: String, content: String?) {
@@ -50,8 +49,10 @@ public class Document: NSManagedObject {
         } else {
             self.size = 0
         }
-        
+
         self.date = Date(timeIntervalSinceNow: 0)
     }
+    
+
 
 }
